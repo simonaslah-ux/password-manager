@@ -31,6 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Registracija</title>
+    <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
 
