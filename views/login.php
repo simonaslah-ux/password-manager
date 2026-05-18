@@ -34,9 +34,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Prisijungimas</title>
+    <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
-
+<div class="container">
     <h1>Prisijungimas</h1>
 
     <?php if (!empty($message)): ?>
@@ -56,6 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <br>
     <a href="register.php">Registruotis</a><br>
     <a href="../index.php">Grįžti į pradžią</a>
-
+</div>
 </body>
 </html>
