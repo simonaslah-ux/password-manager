@@ -21,7 +21,8 @@ if (!isset($_SESSION['user_id'])) {
     <p>Sveiki, <?php echo htmlspecialchars($_SESSION['username']); ?>!</p>
 
     <ul>
-        <li><a href="add_password.php">Generuoti ir išsaugoti slaptažodį</a></li>
+         <li><a href="add_password.php">Generuoti ir išsaugoti slaptažodį</a></li>
+         <li><a href="passwords.php">Peržiūrėti išsaugotus slaptažodžius</a></li>
         <li><a href="../logout.php">Atsijungti</a></li>
     </ul>
 

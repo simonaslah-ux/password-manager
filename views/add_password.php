@@ -8,21 +8,50 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require_once '../classes/PasswordGenerator.php';
+require_once '../classes/PasswordEntry.php';
 
 $generatedPassword = '';
+$message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $length = (int) $_POST['length'];
-    $lowercase = (int) $_POST['lowercase'];
-    $uppercase = (int) $_POST['uppercase'];
-    $numbers = (int) $_POST['numbers'];
-    $specials = (int) $_POST['specials'];
 
-    if ($lowercase + $uppercase + $numbers + $specials <= $length) {
-        $generator = new PasswordGenerator($length, $lowercase, $uppercase, $numbers, $specials);
-        $generatedPassword = $generator->generate();
-    } else {
-        $generatedPassword = 'Klaida: simbolių kiekis negali būti didesnis už bendrą ilgį.';
+    if (isset($_POST['generate'])) {
+        $length = (int) $_POST['length'];
+        $lowercase = (int) $_POST['lowercase'];
+        $uppercase = (int) $_POST['uppercase'];
+        $numbers = (int) $_POST['numbers'];
+        $specials = (int) $_POST['specials'];
+
+        if ($lowercase + $uppercase + $numbers + $specials <= $length) {
+            $generator = new PasswordGenerator($length, $lowercase, $uppercase, $numbers, $specials);
+            $generatedPassword = $generator->generate();
+        } else {
+            $message = 'Klaida: simbolių kiekis negali būti didesnis už bendrą ilgį.';
+        }
+    }
+
+    if (isset($_POST['save'])) {
+        $title = trim($_POST['title']);
+        $password = trim($_POST['password']);
+
+        if (empty($title) || empty($password)) {
+            $message = 'Įveskite pavadinimą ir slaptažodį.';
+        } else {
+            $passwordEntry = new PasswordEntry();
+
+            $saved = $passwordEntry->savePassword(
+                $_SESSION['user_id'],
+                $title,
+                $password,
+                $_SESSION['plain_password']
+            );
+
+            if ($saved) {
+                $message = 'Slaptažodis sėkmingai išsaugotas.';
+            } else {
+                $message = 'Nepavyko išsaugoti slaptažodžio.';
+            }
+        }
     }
 }
 ?>
@@ -35,7 +64,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 
-    <h1>Slaptažodžio generavimas</h1>
+    <h1>Slaptažodžio generavimas ir saugojimas</h1>
+
+    <?php if (!empty($message)): ?>
+        <p><?php echo htmlspecialchars($message); ?></p>
+    <?php endif; ?>
+
+    <h2>Generuoti slaptažodį</h2>
 
     <form method="POST">
         <label>Slaptažodžio ilgis:</label><br>
@@ -53,13 +88,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label>Specialių simbolių kiekis:</label><br>
         <input type="number" name="specials" value="3" min="0" required><br><br>
 
-        <button type="submit">Generuoti</button>
+        <button type="submit" name="generate">Generuoti</button>
     </form>
 
-    <?php if (!empty($generatedPassword)): ?>
-        <h3>Sugeneruotas slaptažodis:</h3>
-        <p><strong><?php echo htmlspecialchars($generatedPassword); ?></strong></p>
-    <?php endif; ?>
+    <hr>
+
+    <h2>Išsaugoti slaptažodį</h2>
+
+    <form method="POST">
+        <label>Pavadinimas:</label><br>
+        <input type="text" name="title" placeholder="Pvz. Gmail"><br><br>
+
+        <label>Slaptažodis:</label><br>
+        <input type="text" name="password" value="<?php echo htmlspecialchars($generatedPassword); ?>"><br><br>
+
+        <button type="submit" name="save">Išsaugoti</button>
+    </form>
 
     <br>
     <a href="dashboard.php">Grįžti į valdymo skydelį</a>
